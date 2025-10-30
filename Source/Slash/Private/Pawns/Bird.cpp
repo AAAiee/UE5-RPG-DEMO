@@ -55,7 +55,6 @@ void ABird::BeginPlay()
 
 void ABird::Move(const FInputActionValue& Value)
 {
-	// we have a bool type InputAction
 	const float Direction = Value.Get<float>();
 	if (GetController() && Direction != 0.0f)
 	{
