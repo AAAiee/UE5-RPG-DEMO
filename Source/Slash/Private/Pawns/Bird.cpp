@@ -64,10 +64,19 @@ void ABird::Move(const FInputActionValue& Value)
 	}
 }
 
+void ABird::Look(const FInputActionValue& value)
+{
+	const FVector2D LookAxisValue = value.Get<FVector2D>();
+	if (GetController())
+	{
+		AddControllerYawInput(LookAxisValue.X); // rotation around Z
+		AddControllerPitchInput(LookAxisValue.Y); // rotation around Y
+	}
+}
+
 void ABird::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ABird::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -76,6 +85,7 @@ void ABird::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent> (PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABird::Move); // called when the function is triggered on succeeded
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABird::Look);
 	}
 }
 

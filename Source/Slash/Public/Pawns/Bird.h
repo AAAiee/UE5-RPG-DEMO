@@ -30,9 +30,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* MoveAction = nullptr; // Initialized in blueprint
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* LookAction; // initialized in blueprint
 
 private:
 	void Move(const FInputActionValue& value);
+	void Look(const FInputActionValue& value);
 
 private:
 	UPROPERTY(VisibleAnywhere)
