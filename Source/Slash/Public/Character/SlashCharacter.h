@@ -31,6 +31,9 @@ protected:
 	class UInputAction* LookAction = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* JumpAction = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputMappingContext* SlashMappingContext = nullptr;
 
 private:
@@ -39,7 +42,13 @@ private:
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	class UCameraComponent* ViewCamera;
+	class UCameraComponent* ViewCamera = nullptr;
 	UPROPERTY(VisibleAnywhere)
-	class USpringArmComponent* SpringArm;
+	class USpringArmComponent* SpringArm = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category=Hair)
+	class UGroomComponent* Hair = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category=Eyebrow)
+	UGroomComponent* Eyebrow = nullptr;
 };

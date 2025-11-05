@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GroomComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 ASlashCharacter::ASlashCharacter()
@@ -26,6 +27,14 @@ ASlashCharacter::ASlashCharacter()
 	SpringArm->TargetArmLength = 300.0f;
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
 	ViewCamera->SetupAttachment(SpringArm);
+
+	// Set up hair and eyebrow components
+	Hair = CreateDefaultSubobject<UGroomComponent>(TEXT("Hair"));
+	Hair->SetupAttachment(GetMesh());
+	Hair->AttachmentName = FString("head");
+	Eyebrow = CreateDefaultSubobject<UGroomComponent>(TEXT("EyeBrow"));
+	Eyebrow->SetupAttachment(GetMesh());
+	Eyebrow->AttachmentName = FString("head");
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
@@ -86,6 +95,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	{
 		EnhancedComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Move);
 		EnhancedComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Look);
+		EnhancedComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &Super::Jump);
 	}
 }
 
