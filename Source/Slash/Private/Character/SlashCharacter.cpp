@@ -95,7 +95,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	{
 		EnhancedComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Move);
 		EnhancedComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Look);
-		EnhancedComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &Super::Jump);
+		EnhancedComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ASlashCharacter::Jump);
 	}
 }
 
