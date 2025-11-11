@@ -44,15 +44,20 @@ protected:
 	UInputAction* EquipAction = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* AttackAction = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputMappingContext* SlashMappingContext = nullptr;
 
 private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Equip();
+	void Attack();
 
 private:
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
+	const FName RightHandSocketName = TEXT("RightHandSocket");
 
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* ViewCamera = nullptr;
@@ -67,6 +72,4 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem = nullptr;
-
-	const FName RightHandSocketName = TEXT("RightHandSocket");
 };
