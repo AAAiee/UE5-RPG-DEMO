@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Character/CharacterState.h"
 #include "SlashAnimInstance.generated.h"
 
 /**
@@ -29,4 +30,7 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	bool IsFalling = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement | Character State", meta = (AllowPrivateAccess = "true"))
+	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 };

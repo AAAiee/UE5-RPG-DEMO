@@ -89,6 +89,7 @@ void ASlashCharacter::Equip()
 	if (WeaponToEquip)
 	{
 		WeaponToEquip->EquippedTo(GetMesh(), RightHandSocketName);
+		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
 	}
 }
 

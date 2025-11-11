@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "CharacterState.h"
 #include "SlashCharacter.generated.h"
 
 class AItem;
@@ -21,8 +22,9 @@ public:
 
 
 public:
-	FORCEINLINE const AItem* GetOverlappingItem() { return OverlappingItem; }
+	FORCEINLINE const AItem* GetOverlappingItem() const { return OverlappingItem; }
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
+	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -50,6 +52,8 @@ private:
 	void Equip();
 
 private:
+	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
+
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* ViewCamera = nullptr;
 	UPROPERTY(VisibleAnywhere)

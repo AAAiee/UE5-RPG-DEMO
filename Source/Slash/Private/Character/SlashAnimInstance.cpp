@@ -25,5 +25,9 @@ void USlashAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		//GroundSpeed = the magnitude of the velocity vector in the X and Y plane
 		GroundSpeed = UKismetMathLibrary::VSizeXY(SlashCharacterMovement->Velocity); 
 		IsFalling = SlashCharacterMovement->IsFalling();
+		CharacterState = SlashCharacter->GetCharacterState();
+
+		UE_LOG(LogTemp, Warning, TEXT("Character State: %s"), *UEnum::GetDisplayValueAsText(CharacterState).ToString());
+
 	}
 }
