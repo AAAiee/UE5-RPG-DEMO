@@ -93,6 +93,11 @@ void ASlashCharacter::Equip()
 	}
 }
 
+void ASlashCharacter::Attack()
+{
+
+}
+
 void ASlashCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -110,6 +115,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		// ETriggerEvent::Started -> one jump per press
 		EnhancedComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ASlashCharacter::Jump);
 		EnhancedComponent->BindAction(EquipAction, ETriggerEvent::Started, this, &ASlashCharacter::Equip);
+		EnhancedComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &ASlashCharacter::Attack);
 	}
 }
 
