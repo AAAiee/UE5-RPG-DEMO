@@ -8,6 +8,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "GroomComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Items/Item.h"
+#include "Items/Weapons/Weapon.h"
 
 ASlashCharacter::ASlashCharacter()
 {
@@ -81,6 +83,15 @@ void ASlashCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void ASlashCharacter::Equip()
+{
+	AWeapon* WeaponToEquip = Cast<AWeapon>(OverlappingItem);
+	if (WeaponToEquip)
+	{
+		WeaponToEquip->EquippedTo(GetMesh(), RightHandSocketName);
+	}
+}
+
 void ASlashCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -95,7 +106,9 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	{
 		EnhancedComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Move);
 		EnhancedComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Look);
+		// ETriggerEvent::Started -> one jump per press
 		EnhancedComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ASlashCharacter::Jump);
+		EnhancedComponent->BindAction(EquipAction, ETriggerEvent::Started, this, &ASlashCharacter::Equip);
 	}
 }
 

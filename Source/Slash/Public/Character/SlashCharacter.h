@@ -7,6 +7,8 @@
 #include "InputActionValue.h"
 #include "SlashCharacter.generated.h"
 
+class AItem;
+
 UCLASS()
 class SLASH_API ASlashCharacter : public ACharacter
 {
@@ -14,10 +16,13 @@ class SLASH_API ASlashCharacter : public ACharacter
 
 public:
 	ASlashCharacter();
-
 	virtual void Tick(float DeltaTime) override;
-
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+
+public:
+	FORCEINLINE const AItem* GetOverlappingItem() { return OverlappingItem; }
+	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -34,11 +39,15 @@ protected:
 	UInputAction* JumpAction = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* EquipAction = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputMappingContext* SlashMappingContext = nullptr;
 
 private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void Equip();
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -51,4 +60,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category=Eyebrow)
 	UGroomComponent* Eyebrow = nullptr;
+
+	UPROPERTY(VisibleInstanceOnly)
+	AItem* OverlappingItem = nullptr;
+
+	const FName RightHandSocketName = TEXT("RightHandSocket");
 };
