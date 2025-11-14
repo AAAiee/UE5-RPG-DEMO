@@ -85,18 +85,35 @@ void ASlashCharacter::Look(const FInputActionValue& Value)
 
 void ASlashCharacter::Equip()
 {
-	AWeapon* WeaponToEquip = Cast<AWeapon>(OverlappingItem);
-	if (WeaponToEquip)
+	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
+	if (OverlappingWeapon )
 	{
-		WeaponToEquip->EquippedTo(GetMesh(), RightHandSocketName);
+		OverlappingWeapon->EquippedTo(GetMesh(), RightHandSocketName);
+		EquippedWeapon = OverlappingWeapon;
+		OverlappingItem = nullptr; // make sure the item is cleared, otherwise it will try to equip the weapon again  when E is repeatedly pressed 
 		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+	}
+	else
+	{
+		if (CanDisarm())
+		{
+			PlayArmOrDisArmMontage(FName("Unequip"));
+			CharacterState = ECharacterState::ECS_Unequipped;
+			ActionState = EActionState::EAS_InteractWithWeapon;
+		}
+		else if (CanArm())
+		{
+			PlayArmOrDisArmMontage(FName("Equip"));
+			CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+			ActionState = EActionState::EAS_InteractWithWeapon;
+		}
 	}
 }
 
 void ASlashCharacter::Attack()
 {
 	if (CanAttack()) {
-		PlayMontage();
+		PlayAttackMontage();
 		ActionState = EActionState::EAS_Attacking; 
 	}
 }
@@ -110,7 +127,17 @@ bool ASlashCharacter::CanAttack()
 	return false;
 }
 
-void ASlashCharacter::PlayMontage()
+bool ASlashCharacter::CanDisarm()
+{
+	return ActionState == EActionState::EAS_Unoccupied && CharacterState != ECharacterState::ECS_Unequipped ;
+}
+
+bool ASlashCharacter::CanArm()
+{
+	return (ActionState == EActionState::EAS_Unoccupied && CharacterState == ECharacterState::ECS_Unequipped && EquippedWeapon != nullptr);
+}
+
+void ASlashCharacter::PlayAttackMontage()
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && AttackMontage)
@@ -135,7 +162,34 @@ void ASlashCharacter::PlayMontage()
 	}
 }
 
+void ASlashCharacter::PlayArmOrDisArmMontage(const FName& SectionName)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && EquipMontage)
+	{
+		AnimInstance->Montage_Play(EquipMontage);
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
 void ASlashCharacter::AttackEnd()
+{
+	ActionState = EActionState::EAS_Unoccupied;
+}
+
+void ASlashCharacter::DisarmWeaponToBack()
+{
+	if (!EquippedWeapon)  return;
+	EquippedWeapon->AttachWeaponToSocket(GetMesh(), "SpineSocket");
+}
+
+void ASlashCharacter::ArmWeaponToHand()
+{
+	if (!EquippedWeapon) return;
+	EquippedWeapon->AttachWeaponToSocket(GetMesh(), RightHandSocketName);
+}
+
+void ASlashCharacter::EquippingFinishing()
 {
 	ActionState = EActionState::EAS_Unoccupied;
 }

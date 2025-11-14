@@ -6,10 +6,15 @@ void AWeapon::EquippedTo(USceneComponent* AttachedTo, const FName& Socket)
 {
 	if (AttachedTo)
 	{
-		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-		ItemMesh->AttachToComponent(AttachedTo, TransformRules, Socket);
+		AttachWeaponToSocket(AttachedTo, Socket);
 		ItemState = EItemState::EIS_Equipped;
 	}
+}
+
+void AWeapon::AttachWeaponToSocket(USceneComponent* AttachedTo, const FName& Socket)
+{
+	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+	ItemMesh->AttachToComponent(AttachedTo, TransformRules, Socket);
 }
 
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

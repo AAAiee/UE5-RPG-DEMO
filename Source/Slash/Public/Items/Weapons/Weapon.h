@@ -13,6 +13,7 @@ class SLASH_API AWeapon : public AItem
 
 public:
 	void EquippedTo(USceneComponent* AttachedTo, const FName& Socket);
+	void AttachWeaponToSocket(USceneComponent* AttachedTo, const FName& Socket);
 
 protected:
 	// Overrides should not use UFUNCTION macro, it is inherited from parent class

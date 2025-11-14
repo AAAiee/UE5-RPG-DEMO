@@ -50,20 +50,33 @@ protected:
 	class UInputMappingContext* SlashMappingContext = nullptr;
 
 private:
-
 	/*Callbacks for movement*/
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Equip();
 	void Attack();
+
+	/*Conditions*/ 
 	bool CanAttack();
+	bool CanDisarm();
+	bool CanArm();
 
 	/*Play Montage*/
-	void PlayMontage();
+	void PlayAttackMontage();
+	void PlayArmOrDisArmMontage(const FName& SectionName); 
 
+	/*Montage Notifier callbacks*/
 	UFUNCTION(BlueprintCallable)
 	void AttackEnd();
-	
+
+	UFUNCTION(BlueprintCallable)
+	void DisarmWeaponToBack();
+
+	UFUNCTION(BlueprintCallable)
+	void ArmWeaponToHand();
+
+	UFUNCTION(BlueprintCallable)
+	void EquippingFinishing();
 
 private:
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
@@ -74,6 +87,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* ViewCamera = nullptr;
+
 	UPROPERTY(VisibleAnywhere)
 	class USpringArmComponent* SpringArm = nullptr;
 
@@ -86,6 +100,12 @@ private:
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = Combat)
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	class AWeapon* EquippedWeapon = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	class UAnimMontage* AttackMontage = nullptr; // initialized in the blueprint
+
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	class UAnimMontage* EquipMontage = nullptr; // initialized in the blueprint
 };
