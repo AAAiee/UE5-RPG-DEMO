@@ -50,14 +50,27 @@ protected:
 	class UInputMappingContext* SlashMappingContext = nullptr;
 
 private:
+
+	/*Callbacks for movement*/
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Equip();
 	void Attack();
+	bool CanAttack();
+
+	/*Play Montage*/
+	void PlayMontage();
+
+	UFUNCTION(BlueprintCallable)
+	void AttackEnd();
+	
 
 private:
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 	const FName RightHandSocketName = TEXT("RightHandSocket");
+
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	EActionState ActionState = EActionState::EAS_Unoccupied;
 
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* ViewCamera = nullptr;
@@ -72,4 +85,7 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = Combat)
+	class UAnimMontage* AttackMontage = nullptr; // initialized in the blueprint
 };

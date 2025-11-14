@@ -8,6 +8,7 @@ void AWeapon::EquippedTo(USceneComponent* AttachedTo, const FName& Socket)
 	{
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		ItemMesh->AttachToComponent(AttachedTo, TransformRules, Socket);
+		ItemState = EItemState::EIS_Equipped;
 	}
 }
 

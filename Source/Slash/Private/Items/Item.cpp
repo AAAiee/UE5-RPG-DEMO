@@ -33,10 +33,16 @@ void AItem::Tick(float DeltaTime)
 
 	RunningTime += DeltaTime;
 
-	//solve for a sine wave
-	float DeltaZ = Amplitude * FMath::Sin(RunningTime * TimeConstant);
-	//TODO: disable this while weapon is equipped
-	//AddActorWorldOffset(FVector(0.0f, 0.0f, DeltaZ));
+	// hovering along z-axis
+	if (ItemState == EItemState::EIS_Hovering) {
+		SinusoidalMove();
+	}
+}
+
+void AItem::SinusoidalMove()
+{
+	const float DeltaZ = Amplitude * FMath::Sin(RunningTime * TimeConstant);
+	AddActorWorldOffset(FVector(0.0f, 0.0f, DeltaZ));
 }
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

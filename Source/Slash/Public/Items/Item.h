@@ -6,6 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
 
+
+enum class EItemState : uint8
+{
+	EIS_Hovering UMETA(DisplayName = "Hovering"),
+	EIS_Equipped UMETA(DisplayName = "Equipped"),
+};
+
 UCLASS()
 class SLASH_API AItem : public AActor
 {
@@ -35,10 +42,13 @@ protected:
 	UFUNCTION()
 	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	void SinusoidalMove();
 
 protected:
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly)
 	UStaticMeshComponent* ItemMesh = nullptr;
+
+	EItemState ItemState = EItemState::EIS_Hovering;
 
 private:
 	// VisibleDefaultsOnly: Visible in the Blueprint editor, but not editable

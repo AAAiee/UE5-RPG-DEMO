@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Items/Item.h"
 #include "Items/Weapons/Weapon.h"
+#include "Animation/AnimMontage.h"
 
 ASlashCharacter::ASlashCharacter()
 {
@@ -56,8 +57,8 @@ void ASlashCharacter::BeginPlay()
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
 {
+	if (ActionState != EActionState::EAS_Unoccupied) return;
 	const FVector2D Direction = Value.Get<FVector2D>();
-
 	if (GetController())
 	{
 		const FRotator rotation = GetControlRotation();
@@ -66,7 +67,6 @@ void ASlashCharacter::Move(const FInputActionValue& Value)
 		FRotationMatrix RotationMatrix = FRotationMatrix(YawRotation);
 		const FVector Front = RotationMatrix.GetUnitAxis(EAxis::X);
 		AddMovementInput(Front, Direction.X);
-
 		const FVector Right = RotationMatrix.GetUnitAxis(EAxis::Y);
 		AddMovementInput(Right, Direction.Y);
 	}
@@ -95,7 +95,49 @@ void ASlashCharacter::Equip()
 
 void ASlashCharacter::Attack()
 {
+	if (CanAttack()) {
+		PlayMontage();
+		ActionState = EActionState::EAS_Attacking; 
+	}
+}
 
+bool ASlashCharacter::CanAttack()
+{
+	if (ActionState == EActionState::EAS_Unoccupied && CharacterState != ECharacterState::ECS_Unequipped)
+	{
+		return true;
+	}
+	return false;
+}
+
+void ASlashCharacter::PlayMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && AttackMontage)
+	{
+		AnimInstance->Montage_Play(AttackMontage);
+		const int32 Selection = FMath::RandRange(0, 1);
+		FName SectionName = FName();
+		switch (Selection)
+		{
+		case 0:
+			SectionName = "Attack1";
+			AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
+			break;
+
+		case 1:
+			SectionName = "Attack2";
+			AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void ASlashCharacter::AttackEnd()
+{
+	ActionState = EActionState::EAS_Unoccupied;
 }
 
 void ASlashCharacter::Tick(float DeltaTime)
