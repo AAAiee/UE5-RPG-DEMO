@@ -1,20 +1,60 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "Items/Weapons/Weapon.h"
+#include "Kismet/GameplayStatics.h" // sound play
+#include "Kismet/KismetSystemLibrary.h" // box trace
 #include "Character/SlashCharacter.h"
+#include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
+
+
+AWeapon::AWeapon()
+{
+	WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Weapon Box"));
+	WeaponBox->SetupAttachment(GetRootComponent());
+
+	//Overlap with all types except Pawns
+	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision); //start off no collision
+	WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+
+	//Box trace start and end
+	BoxTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
+	BoxTraceStart->SetupAttachment(GetRootComponent());
+	BoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));
+	BoxTraceEnd->SetupAttachment(GetRootComponent());
+}
 
 void AWeapon::EquippedTo(USceneComponent* AttachedTo, const FName& Socket)
 {
-	if (AttachedTo)
+	AttachWeaponToSocket(AttachedTo, Socket);
+	ItemState = EItemState::EIS_Equipped;
+
+	if (EquipSound)
 	{
-		AttachWeaponToSocket(AttachedTo, Socket);
-		ItemState = EItemState::EIS_Equipped;
+		UGameplayStatics::PlaySoundAtLocation(this,
+			EquipSound,
+			GetActorLocation());
+	}
+
+	if (Sphere)
+	{
+		Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }
 
 void AWeapon::AttachWeaponToSocket(USceneComponent* AttachedTo, const FName& Socket)
 {
-	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-	ItemMesh->AttachToComponent(AttachedTo, TransformRules, Socket);
+	if (AttachedTo) {
+		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+		ItemMesh->AttachToComponent(AttachedTo, TransformRules, Socket);
+	}
+}
+
+void AWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+
+	WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnBoxOverlap);
 }
 
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -41,5 +81,19 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	{
 		SlashCharacter->SetOverlappingItem(nullptr);
 	}
+
+}
+
+void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	const FVector Start = BoxTraceStart->GetComponentLocation();
+	const FVector End = BoxTraceEnd->GetComponentLocation();
+	
+	TArray<AActor*> ActorsToIgnore;
+	ActorsToIgnore.Add(this);
+	FHitResult HitResult;
+	UKismetSystemLibrary::BoxTraceSingle(this, Start, End, FVector(5.f, 5.f, 5.f), BoxTraceStart->GetComponentRotation(), ETraceTypeQuery::TraceTypeQuery1, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, HitResult, true); 
+
+
 
 }

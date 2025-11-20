@@ -50,6 +50,10 @@ protected:
 
 	EItemState ItemState = EItemState::EIS_Hovering;
 
+
+	UPROPERTY(VisibleAnyWhere)
+	class USphereComponent* Sphere = nullptr;
+
 private:
 	// VisibleDefaultsOnly: Visible in the Blueprint editor, but not editable
 		// Notice: This is not an instance so running time will not be updated
@@ -72,7 +76,4 @@ private:
 		// Notice: Change in Instance will override the Blueprint default value
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Oscillation Parameters", meta = (AllowPrivateAccess = "true")) 
 	float TimeConstant = 10.0f;
-
-	UPROPERTY(VisibleAnyWhere)
-	class USphereComponent* Sphere = nullptr;
 };

@@ -20,6 +20,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable)
+	void EnableWeaponCollision(ECollisionEnabled::Type CollisionEnabled);
 
 public:
 	FORCEINLINE const AItem* GetOverlappingItem() const { return OverlappingItem; }

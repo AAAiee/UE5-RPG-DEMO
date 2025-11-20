@@ -11,6 +11,7 @@
 #include "Items/Item.h"
 #include "Items/Weapons/Weapon.h"
 #include "Animation/AnimMontage.h"
+#include "Components/BoxComponent.h"
 
 ASlashCharacter::ASlashCharacter()
 {
@@ -86,7 +87,7 @@ void ASlashCharacter::Look(const FInputActionValue& Value)
 void ASlashCharacter::Equip()
 {
 	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
-	if (OverlappingWeapon )
+	if (OverlappingWeapon)
 	{
 		OverlappingWeapon->EquippedTo(GetMesh(), RightHandSocketName);
 		EquippedWeapon = OverlappingWeapon;
@@ -212,6 +213,14 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ASlashCharacter::Jump);
 		EnhancedComponent->BindAction(EquipAction, ETriggerEvent::Started, this, &ASlashCharacter::Equip);
 		EnhancedComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &ASlashCharacter::Attack);
+	}
+}
+
+void ASlashCharacter::EnableWeaponCollision(ECollisionEnabled::Type CollisionEnabled)
+{
+	if (EquippedWeapon && EquippedWeapon->GetWeaponBox())
+	{
+		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
 	}
 }
 
