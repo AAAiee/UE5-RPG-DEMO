@@ -9,6 +9,8 @@
 
 
 class UAnimMontage;
+class USoundBase;
+class UParticleSystem;
 
 UCLASS()
 class SLASH_API AEnemy : public ACharacter, public IHitInterface
@@ -30,6 +32,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* HitReactMontage;
 
+	UPROPERTY(EditAnywhere, Category = Sounds)
+	USoundBase* HitSound;
+
+	UPROPERTY(EditAnywhere, Category = VisualEffect)
+	UParticleSystem* HitParticles;
+private:
 	void DirectionHitReact(const FVector& ImpactPoint);
 
 };

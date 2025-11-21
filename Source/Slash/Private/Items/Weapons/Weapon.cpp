@@ -14,11 +14,12 @@ AWeapon::AWeapon()
 	WeaponBox->SetupAttachment(GetRootComponent());
 
 	//Overlap with all types except Pawns
-	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision); //start off no collision
+	//start off no collision
+	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 	WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
-	//Box trace start and end
+	//Box trace start and end, using two invisible scene components as marks to form a line 
 	BoxTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
 	BoxTraceStart->SetupAttachment(GetRootComponent());
 	BoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));
@@ -37,6 +38,7 @@ void AWeapon::EquippedTo(USceneComponent* AttachedTo, const FName& Socket)
 			GetActorLocation());
 	}
 
+	//After equip the weapon, the weapon's sphere is disabled to prevent more overlap events are generated-> leads to overlapping item is set to the weapon again
 	if (Sphere)
 	{
 		Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -55,6 +57,7 @@ void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//register the overlap callback for the box component
 	WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnBoxOverlap);
 }
 
@@ -91,7 +94,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	const FVector End = BoxTraceEnd->GetComponentLocation();
 	
 	FHitResult HitResult;
-	UKismetSystemLibrary::BoxTraceSingle(this, Start, End, FVector(5.f, 5.f, 5.f), BoxTraceStart->GetComponentRotation(), ETraceTypeQuery::TraceTypeQuery1, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, HitResult, true); 
+	UKismetSystemLibrary::BoxTraceSingle(this, Start, End, FVector(5.f, 5.f, 5.f), BoxTraceStart->GetComponentRotation(), ETraceTypeQuery::TraceTypeQuery1, false, ActorsToIgnore, EDrawDebugTrace::None, HitResult, true); 
 
 	if (HitResult.GetActor())
 	{

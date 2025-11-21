@@ -91,7 +91,8 @@ void ASlashCharacter::Equip()
 	{
 		OverlappingWeapon->EquippedTo(GetMesh(), RightHandSocketName);
 		EquippedWeapon = OverlappingWeapon;
-		OverlappingItem = nullptr; // make sure the item is cleared, otherwise it will try to equip the weapon again  when E is repeatedly pressed 
+		// make sure the item is cleared, otherwise it will try to equip the weapon again  when E is repeatedly pressed 
+		OverlappingItem = nullptr;
 		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
 	}
 	else

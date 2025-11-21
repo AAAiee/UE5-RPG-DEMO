@@ -5,6 +5,7 @@
 #include "Components/SkeletalMeshComponent.h" // Get access to Mesh
 #include "Components/CapsuleComponent.h" // Get access to CapsuleComponent
 #include "Slash/DebugMacros.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
@@ -27,6 +28,19 @@ AEnemy::AEnemy()
 void AEnemy::GetHit(const FVector& ImpactPoint)
 {
 	DirectionHitReact(ImpactPoint);
+	if (HitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, HitSound, ImpactPoint);
+	}
+
+	if (HitParticles)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			HitParticles, 
+			ImpactPoint
+			);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -77,43 +91,6 @@ void AEnemy::DirectionHitReact(const FVector& ImpactPoint)
 		Section = FName("FromLeft");
 	}
 	PlayHitReactMontage(Section);
-
-
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("Theta: %f"), Theta));
-	}
-
-	UKismetSystemLibrary::DrawDebugArrow(
-		this,
-		GetActorLocation(),
-		GetActorLocation() + Forward * 60.f,
-		10.f,
-		FColor::Green,
-		5.f,
-		2.f
-	);
-
-	UKismetSystemLibrary::DrawDebugArrow(
-		this,
-		GetActorLocation(),
-		GetActorLocation() + ToHit * 60.f,
-		10.f,
-		FColor::Blue,
-		5.f,
-		2.f
-	);
-
-	UKismetSystemLibrary::DrawDebugArrow(
-		this,
-		GetActorLocation(),
-		GetActorLocation() + CrossProduct * 60.f,
-		10.f,
-		FColor::Yellow,
-		5.f,
-		2.f
-	);
 }
 
 // Called every frame
