@@ -22,6 +22,7 @@ public:
 
 public:
 	FORCEINLINE UBoxComponent* GetWeaponBox() const { return WeaponBox; }
+	FORCEINLINE void ClearActorsToIgnore() { ActorsToIgnore.Empty(); }
 
 protected:
 	virtual void BeginPlay() override;
@@ -47,4 +48,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* BoxTraceEnd = nullptr;
+
+	TArray<AActor*> ActorsToIgnore; //cleared every time after swing collision box is off
 };

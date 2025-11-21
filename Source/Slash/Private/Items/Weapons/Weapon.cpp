@@ -5,6 +5,7 @@
 #include "Character/SlashCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
+#include "Interfaces/HitInterface.h"
 
 
 AWeapon::AWeapon()
@@ -89,11 +90,16 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	const FVector Start = BoxTraceStart->GetComponentLocation();
 	const FVector End = BoxTraceEnd->GetComponentLocation();
 	
-	TArray<AActor*> ActorsToIgnore;
-	ActorsToIgnore.Add(this);
 	FHitResult HitResult;
 	UKismetSystemLibrary::BoxTraceSingle(this, Start, End, FVector(5.f, 5.f, 5.f), BoxTraceStart->GetComponentRotation(), ETraceTypeQuery::TraceTypeQuery1, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, HitResult, true); 
 
-
-
+	if (HitResult.GetActor())
+	{
+		ActorsToIgnore.AddUnique(HitResult.GetActor());
+		IHitInterface* HitInterface = Cast<IHitInterface>(HitResult.GetActor());
+		if (HitInterface)
+		{
+			HitInterface->GetHit(HitResult.ImpactPoint);
+		}
+	}
 }

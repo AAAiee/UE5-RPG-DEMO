@@ -4,6 +4,8 @@
 #include "Enemy/Enemy.h"
 #include "Components/SkeletalMeshComponent.h" // Get access to Mesh
 #include "Components/CapsuleComponent.h" // Get access to CapsuleComponent
+#include "Slash/DebugMacros.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -22,11 +24,96 @@ AEnemy::AEnemy()
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 }
 
+void AEnemy::GetHit(const FVector& ImpactPoint)
+{
+	DirectionHitReact(ImpactPoint);
+}
+
 // Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AEnemy::PlayHitReactMontage(const FName& SectionName)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (HitReactMontage && AnimInstance)
+	{
+		AnimInstance->Montage_Play(HitReactMontage);
+		AnimInstance->Montage_JumpToSection(SectionName, HitReactMontage);
+	}
+}
+
+void AEnemy::DirectionHitReact(const FVector& ImpactPoint)
+{
+	const FVector Forward = GetActorForwardVector(); // normalized
+	const FVector ImpactLower(ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z);
+	const FVector ToHit = (ImpactLower - GetActorLocation()).GetSafeNormal();
+	// |Forward| and |ToHit| equals 1, |A|*|B|*COS()
+	const double CosTheta = FVector::DotProduct(Forward, ToHit);
+	double Theta = FMath::Acos(CosTheta);
+	Theta = FMath::RadiansToDegrees(Theta);
+
+	// positive meaning hit from right, negative hit from left
+	const FVector CrossProduct = FVector::CrossProduct(Forward, ToHit);
+	if (CrossProduct.Z < 0)
+	{
+		Theta *= -1.0f;
+	}
+
+	FName Section("FromBack");
+	if (Theta >= -45.f && Theta < 45.0f)
+	{
+		Section = FName("FromFront");
+	}
+	else if (Theta >= 45.f && Theta < 135.f)
+	{
+		Section = FName("FromRight");
+	}
+	else if (Theta >= -135.f && Theta < -45.f)
+	{
+		Section = FName("FromLeft");
+	}
+	PlayHitReactMontage(Section);
+
+
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("Theta: %f"), Theta));
+	}
+
+	UKismetSystemLibrary::DrawDebugArrow(
+		this,
+		GetActorLocation(),
+		GetActorLocation() + Forward * 60.f,
+		10.f,
+		FColor::Green,
+		5.f,
+		2.f
+	);
+
+	UKismetSystemLibrary::DrawDebugArrow(
+		this,
+		GetActorLocation(),
+		GetActorLocation() + ToHit * 60.f,
+		10.f,
+		FColor::Blue,
+		5.f,
+		2.f
+	);
+
+	UKismetSystemLibrary::DrawDebugArrow(
+		this,
+		GetActorLocation(),
+		GetActorLocation() + CrossProduct * 60.f,
+		10.f,
+		FColor::Yellow,
+		5.f,
+		2.f
+	);
 }
 
 // Called every frame

@@ -221,6 +221,7 @@ void ASlashCharacter::EnableWeaponCollision(ECollisionEnabled::Type CollisionEna
 	if (EquippedWeapon && EquippedWeapon->GetWeaponBox())
 	{
 		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+		EquippedWeapon->ClearActorsToIgnore();
 	}
 }
 
