@@ -21,5 +21,8 @@ class SLASH_API IHitInterface
 	GENERATED_BODY()
 
 public:
-	virtual void GetHit(const FVector& ImpactPoint) = 0;
+
+	// can be implemented in both blueprint and C++, don't need virtual anymore, UE5 handles this for us
+	UFUNCTION(BlueprintNativeEvent)
+	void GetHit(const FVector& ImpactPoint);
 };
